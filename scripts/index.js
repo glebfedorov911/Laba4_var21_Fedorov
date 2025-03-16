@@ -1,4 +1,4 @@
-import { PathHashCreator } from "/scripts/PathCreator.js";
+import { LocalStorageManager } from "/scripts/LocalStorageManager.js";
 
 
 const DEFAULT_TIME = 10;
@@ -29,25 +29,20 @@ function convertTimeToDiaposoneFrom1To60(time) {
 }
 
 startButton.addEventListener("click", function() {
-    let hash = createHashForRedirectToQuestionPath();
-    let pathCreator = new PathHashCreator(window, "question.html", hash);
-    let url = pathCreator.getUrl();
-    window.location.replace(url);
+    saveDataToLocalStorage();
+    window.location.replace('question.html');
 })
 
 /**
- * Создает hash для перехода на страницу с вопросом.
- * @returns {Object} - словарь для hash записи параметров/
+ * Сохраняет данные в локальное хранилище для перехода на страницу с вопросом.
+ * @returns {void}
  */
-function createHashForRedirectToQuestionPath() {
-    let time_value = get_time_value();
-    let hash = {
-        "q": 1,
-        "t": time_value,
-        "mq": mixQuestions.checked,
-        "ma": mixAnswers.checked
-    }
-    return hash;
+function saveDataToLocalStorage() {
+    let localStorageManager = new LocalStorageManager();
+    localStorageManager.setItem('q', 1);
+    localStorageManager.setItem('t', get_time_value(time.value));
+    localStorageManager.setItem('mq', mixQuestions.checked);
+    localStorageManager.setItem('ma', mixAnswers.checked);
 }
 
 /**

@@ -1,10 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles/question.css">
+    <script type="module" src="/scripts/FileParser.js" defer></script>
+    <script type="module" src="/scripts/QuestionShower.js" defer></script>
+    <script type="module" src="/scripts/FillPagination.js" defer></script>
+    <script type="module" src="/scripts/Pagination.js" defer></script>
+    <script type="module" src="/scripts/LocalStorageManager.js" defer></script>
+    <script type="module" src="/scripts/MixData.js" defer></script>
+    <script type="module" src="/scripts/questions.js" defer></script>
     <title>Вопросы</title>
 </head>
 <body>
-  <h1>привет</h1>
+<div class="container">
+    <h1>📝 Опрос</h1>
+    <button class="home-btn">🏠 Домой</button>
+
+    <div class="question-block">
+        <div class="timer">⏳ 00:00</div>
+        <div class="num-question"></div>
+        <div class="question"></div>
+    </div>
+
+    <div class="answers">
+    </div>
+
+    <div class="pagination">
+        <button class="nav prev" id="first">&lt;&lt;</button>
+        <button class="nav prev" id="prev">&lt;</button>
+        <button class="page">1</button>
+        <button class="page">2</button>
+        <button class="page">3</button>
+        <button class="page">4</button>
+        <button class="page">5</button>
+        <button class="page">6</button>
+        <button class="page">7</button>
+        <button class="page">8</button>
+        <button class="nav next" id="next">&gt;</button>
+        <button class="nav next" id="last">&gt;&gt;</button>
+    </div>
+
+    <button class="stop-btn">❌ Завершить тест</button>
+</div>
 </body>
 </html>
