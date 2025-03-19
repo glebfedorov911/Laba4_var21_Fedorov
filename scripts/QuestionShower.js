@@ -25,6 +25,23 @@ class QuestionShower {
         this._tagAnswer.innerHTML = '';
     }
 
+    _createSelectForAnswers(type, answer) {
+        let label = document.createElement('label');
+        this._setAttributes(label, 'class', 'answer-label');
+
+        let newButtonToAnswer = document.createElement('input');
+        this._setAttributes(newButtonToAnswer, 'type', type)
+            ._setAttributes(newButtonToAnswer, 'class', 'answer-checkbox')
+            ._setAttributes(newButtonToAnswer, 'name', 'answer');
+
+        label.appendChild(newButtonToAnswer);
+
+        let answerText = document.createTextNode(answer);
+        label.append(answerText);
+
+        this._tagAnswer.appendChild(label);
+    }
+
     _createButton (textOnButton) {
         let newButtonToAnswer = document.createElement('input');
         this._setAttributes(newButtonToAnswer, 'type', 'button')
@@ -49,8 +66,13 @@ class OneAnswerQuestionShower extends QuestionShower {
         this._setQuestion();
         this._setAnswerToEmpty();
         Object.values(this._answers).forEach(answer => {
-            this._createButton(answer);
+            this._questionHandler(answer);
         })
+        this._createButton('Отправить ответ');
+    }
+
+    _questionHandler(answer) {
+        this._createSelectForAnswers('radio', answer);
     }
 }
 
@@ -70,19 +92,7 @@ class MultiAnswerQuestionShower extends QuestionShower {
     }
 
     _questionHandler(answer) {
-        let label = document.createElement('label');
-        this._setAttributes(label, 'class', 'answer-label');
-
-        let newButtonToAnswer = document.createElement('input');
-        this._setAttributes(newButtonToAnswer, 'type', 'checkbox')
-            ._setAttributes(newButtonToAnswer, 'class', 'answer-checkbox');
-
-        label.appendChild(newButtonToAnswer);
-
-        let answerText = document.createTextNode(answer);
-        label.append(answerText);
-
-        this._tagAnswer.appendChild(label);
+        this._createSelectForAnswers('checkbox', answer);
     }
 }
 

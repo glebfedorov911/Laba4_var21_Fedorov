@@ -2,69 +2,56 @@ import { FillPagination } from "/scripts/FillPagination.js";
 import { Pagination } from "/scripts/Pagination.js";
 import { JsonParser } from "/scripts/FileParser.js";
 import { QuestionShowerFabric } from "/scripts/QuestionShower.js";
-import { LocalStorageManager } from "/scripts/LocalStorageManager.js";
 import { MixData } from "/scripts/MixData.js";
 
 
 function goHome() {
-    let localStorageManager = createLocalStorageManager();
-    localStorageManager.clear();
+    localStorage.clear();
     window.location.replace("index.html");
 }
 
 function createStateForPagination() {
-    let localStorageManager = createLocalStorageManager();
-
-    if (!localStorageManager.getItem('showed')) {
-        localStorageManager.setItem('showed', JSON.stringify([]));
+    if (!localStorage.getItem('showed')) {
+        localStorage.setItem('showed', JSON.stringify([]));
     }
 
-    if (!localStorageManager.getItem('answered')) {
-        localStorageManager.setItem('answered', JSON.stringify([]));
+    if (!localStorage.getItem('answered')) {
+        localStorage.setItem('answered', JSON.stringify([]));
     }
 
-    if (!localStorageManager.getItem('userAnswer')) {
-        localStorageManager.setItem('userAnswer', JSON.stringify([]));
+    if (!localStorage.getItem('userAnswer')) {
+        localStorage.setItem('userAnswer', JSON.stringify([]));
     }
 }
 
-function createLocalStorageManager() {
-    return new LocalStorageManager();
-}
 
 function goToNextQuestion() {
     let pagination = createPagination();
-    let localStorageManager = createLocalStorageManager();
-    localStorageManager.setItem('q', pagination.next());
+    localStorage.setItem('q', pagination.next());
 }
 
 function goToPrevQuestion() {
     let pagination = createPagination();
-    let localStorageManager = createLocalStorageManager();
-    localStorageManager.setItem('q', pagination.prev());
+    localStorage.setItem('q', pagination.prev());
 }
 
 function goToFirstQuestion() {
     let pagination = createPagination();
-    let localStorageManager = createLocalStorageManager();
-    localStorageManager.setItem('q', pagination.goToFirst());
+    localStorage.setItem('q', pagination.goToFirst());
 }
 
 function goToLastQuestion() {
     let pagination = createPagination();
-    let localStorageManager = createLocalStorageManager();
-    localStorageManager.setItem('q', pagination.goToLast());
+    localStorage.setItem('q', pagination.goToLast());
 }
 
 function goToPage(pageNumber) {
     let pagination = createPagination();
-    let localStorageManager = createLocalStorageManager();
-    localStorageManager.setItem('q', pagination.goToPage(pageNumber));
+    localStorage.setItem('q', pagination.goToPage(pageNumber));
 }
 
 function createPagination() {
-    let localStorageManager = createLocalStorageManager();
-    let currentQuestion = Number(localStorageManager.getItem('q'));
+    let currentQuestion = Number(localStorage.getItem('q'));
 
     return new Pagination(
         currentQuestion, questions.length
@@ -72,11 +59,9 @@ function createPagination() {
 }
 
 function showQuestions() {
-    let localStorageManager = createLocalStorageManager();
-
     let tagQuestion = document.querySelector('.question');
     let tagAnswers = document.querySelector('.answers');
-    let currentQuestion = Number(localStorageManager.getItem('q')) - 1;
+    let currentQuestion = Number(JSON.parse(localStorage.getItem('q'))) - 1;
     let numQuestion = document.querySelector(".num-question");
 
     let showerFabric = new QuestionShowerFabric(
@@ -85,6 +70,11 @@ function showQuestions() {
     )
     showerFabric.createShower().show();
     numQuestion.innerText = `Вопрос номер: ${currentQuestion + 1}`;
+}
+
+function setMultiple() {
+    let answers = JSON.stringify(document.querySelector('answers'));
+
 }
 
 function getQuestions(filename) {
@@ -98,50 +88,86 @@ function stateUpdate() {
     createStateForPagination();
     fillPagination();
 
-    let answerButtons = document.querySelectorAll(".answer");
-    let answerCheckbox = document.querySelectorAll(".answer-checkbox");
+    let answerButtons = document.querySelector(".answer");
 
-    answerButtons.forEach(function (button) {
-        button.addEventListener("click", function (e) {
-            setAnswered();
-            goToNextQuestion();
-            stateUpdate();
-        })
+    answerButtons.addEventListener("click", function (e) {
+        setAnswered();
+        saveUserAnswer();
+        goToNextQuestion();
+        stateUpdate();
     })
 }
 
+function saveUserAnswer() {
+    let currentPage = Number(JSON.parse(localStorage.getItem("q"))) - 1;
+    let currentQuestion = JSON.parse(localStorage.getItem("questions"))[currentPage];
+    let answers = JSON.parse(localStorage.getItem("answers")) || {};
+
+    console.log(currentQuestion, currentQuestion.mode);
+    if (currentQuestion.mode == "multiple") {
+        saveMultipleAnswer(currentQuestion, answers);
+    } else if (currentQuestion.mode == "one") {
+        saveOneAnswer(currentQuestion, answers);
+    } else if (currentQuestion.mode == "open") {
+        saveOpenAnswer(currentQuestion, answers);
+    }
+    console.log(JSON.parse(localStorage.getItem("answers")))
+
+}
+
+function saveMultipleAnswer(currentQuestion, answers) {
+    let checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
+    let answer = [];
+    for (let i = 0; i  < checkboxes.length; i++) {
+        if (checkboxes[i].checked) {
+            let label = checkboxes[i].closest('label');
+            answer.push(label.textContent);
+        }
+    }
+    answers[currentQuestion.question] = answer;
+    console.log(answers);
+    localStorage.setItem("answers", JSON.stringify(answers));
+}
+
+function saveOneAnswer(currentQuestion, answers) {
+    let radioes = document.querySelector("input[type='radio']:checked");
+
+    answers[currentQuestion.question] = [radioes.closest('label').textContent];
+    localStorage.setItem("answers", JSON.stringify(answers));
+}
+
+function saveOpenAnswer(currentQuestion, answers) {
+    let answerText = document.querySelector(".answer-text").value;
+    answers[currentQuestion.question] = [answerText];
+    localStorage.setItem("answers", JSON.stringify(answers));
+}
+
 function fillPagination() {
-    let localStorageManager = createLocalStorageManager();
     let fillPagination = new FillPagination(
-        Number(localStorageManager.getItem('q')),
-        localStorageManager.getItem('showed'),
-        localStorageManager.getItem('answered'),
+        Number(localStorage.getItem('q')),
+        localStorage.getItem('showed'),
+        localStorage.getItem('answered'),
         pagesNavigation
     );
     fillPagination.fill();
 }
 
 function setAnswered() {
-    let localStorageManager = createLocalStorageManager();
-
-    let answered = JSON.parse(localStorageManager.getItem('answered')) || [];
-    answered.push(Number(localStorageManager.getItem('q')));
-    localStorageManager.setItem('answered', JSON.stringify(answered));
+    let answered = JSON.parse(localStorage.getItem('answered')) || [];
+    answered.push(Number(localStorage.getItem('q')));
+    localStorage.setItem('answered', JSON.stringify(answered));
 }
 
 function setShowed() {
-    let localStorageManager = createLocalStorageManager();
-
-    let showed = JSON.parse(localStorageManager.getItem('showed')) || [];
-    showed.push(Number(localStorageManager.getItem('q')));
-    localStorageManager.setItem('showed', JSON.stringify(showed));
+    let showed = JSON.parse(localStorage.getItem('showed')) || [];
+    showed.push(Number(localStorage.getItem('q')));
+    localStorage.setItem('showed', JSON.stringify(showed));
 }
 
 function mixQuestions() {
-    let localStorageManager = createLocalStorageManager();
     let questions = getQuestions('v1_geo.json');
 
-    if (localStorageManager.getItem('mq') == 'true') {
+    if (localStorage.getItem('mq') == 'true') {
         let mixData = new MixData(getQuestions('v1_geo.json'));
         return mixData.getArray();
     }
@@ -150,9 +176,7 @@ function mixQuestions() {
 }
 
 function mixAnswers(questions) {
-    let localStorageManager = createLocalStorageManager();
-
-    if (localStorageManager.getItem('ma') == 'true') {
+    if (localStorage.getItem('ma') == 'true') {
         for (let i = 0; i < questions.length; i++) {
             if (!questions[i].variants) {
                 continue;
@@ -161,6 +185,8 @@ function mixAnswers(questions) {
             questions[i].variants = mixData.getArray();
         }
     }
+
+    localStorage.setItem("questions", JSON.stringify(questions))
     return questions;
 }
 

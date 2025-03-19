@@ -1,6 +1,3 @@
-import { LocalStorageManager } from "/scripts/LocalStorageManager.js";
-
-
 const DEFAULT_TIME = 10;
 
 let startButton = document.querySelector(".start-btn");
@@ -38,11 +35,10 @@ startButton.addEventListener("click", function() {
  * @returns {void}
  */
 function saveDataToLocalStorage() {
-    let localStorageManager = new LocalStorageManager();
-    localStorageManager.setItem('q', 1);
-    localStorageManager.setItem('t', get_time_value(time.value));
-    localStorageManager.setItem('mq', mixQuestions.checked);
-    localStorageManager.setItem('ma', mixAnswers.checked);
+    localStorage.setItem('q', 1);
+    localStorage.setItem('t', get_time_value(time.value));
+    localStorage.setItem('mq', mixQuestions.checked);
+    localStorage.setItem('ma', mixAnswers.checked);
 }
 
 /**
