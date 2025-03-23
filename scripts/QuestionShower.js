@@ -1,11 +1,22 @@
 
 
+
+/**
+ * Класс для показа вопроса (родитель)
+ */
 class QuestionShower {
     _tagQuestion;
     _tagAnswer;
     _question;
     _answers;
 
+    /**
+     * Конструктор.
+     * @param {HTMLInputElement} tagQuestion - тег вопроса.
+     * @param {HTMLInputElement} tagAnswer - тег ответов.
+     * @param {string} question - вопрос.
+     * @param {array} answers - ответы.
+     */
     constructor(tagQuestion, tagAnswer, question, answers) {
         this._tagQuestion = tagQuestion;
         this._tagAnswer = tagAnswer;
@@ -13,22 +24,39 @@ class QuestionShower {
         this._answers = answers;
     }
 
+    /**
+     * Отображает вопрос на странице.
+    */
     show() {
-        throw new Error("Этот метод должен быть реализован в подклассе");
+        throw new Error("Этот функция должен быть реализован в подклассе");
     }
 
+    /**
+     * Вспомогательный функция для создания вопроса и ответа.
+    */
     _questionHandler() {
-        throw new Error("Этот метод должен быть реализован в подклассе");
+        throw new Error("Этот функция должен быть реализован в подклассе");
     }
 
+    /**
+     * Вспомогательный функция для отображение вопроса текстом.
+    */
     _setQuestion() {
         this._tagQuestion.innerText = this._question;
     }
 
+    /**
+     * Вспомогательный функция для очищения поля с ответами.
+    */
     _setAnswerToEmpty() {
         this._tagAnswer.innerHTML = '';
     }
 
+    /**
+     * Вспомогательный функция для создания чекбокса или радио с ответами.
+     * @param {string} type - тип элемента.
+     * @param {string} answer - ответ.
+    */
     _createSelectForAnswers(type, answer) {
         let label = document.createElement('label');
         this._setAttributes(label, 'class', 'answer-label');
@@ -46,6 +74,10 @@ class QuestionShower {
         this._tagAnswer.appendChild(label);
     }
 
+    /**
+     * функция для создания кнопки.
+     * @param {string} textOnButton - текст на кнопке.
+    */
     _createButton (textOnButton) {
         let newButtonToAnswer = document.createElement('input');
         this._setAttributes(newButtonToAnswer, 'type', 'button')
@@ -54,18 +86,37 @@ class QuestionShower {
         this._tagAnswer.appendChild(newButtonToAnswer);
     }
 
+    /**
+     * функция для установки атрибутов.
+     * @param {HTMLInputElement} element - текст на кнопке.
+     * @param {string} attr - аттрибут.
+     * @param {string} value - значение.
+    */
     _setAttributes(element, attr, value) {
         element.setAttribute(attr, value);
         return this;
     }
 }
 
+/**
+ * Класс для показа вопроса (один ответ)
+ */
 class OneAnswerQuestionShower extends QuestionShower {
 
+    /**
+     * Конструктор.
+     * @param {HTMLInputElement} tagQuestion - тег вопроса.
+     * @param {HTMLInputElement} tagAnswer - тег ответов.
+     * @param {string} question - вопрос.
+     * @param {array} answers - ответы.
+     */
     constructor(tagQuestion, tagAnswer, question, answers) {
         super(tagQuestion, tagAnswer, question, answers);
     }
 
+    /**
+     * Отображает вопрос на странице.
+    */
     show() {
         this._setQuestion();
         this._setAnswerToEmpty();
@@ -73,6 +124,9 @@ class OneAnswerQuestionShower extends QuestionShower {
         this._createButton('Отправить ответ');
     }
 
+    /**
+     * Вспомогательный функция для создания вопроса и ответа.
+    */
     _questionHandler() {
         Object.values(this._answers).forEach(answer => {
             this._createSelectForAnswers('radio', answer);
@@ -80,12 +134,25 @@ class OneAnswerQuestionShower extends QuestionShower {
     }
 }
 
+/**
+ * Класс для показа вопроса (несколько ответов)
+ */
 class MultiAnswerQuestionShower extends QuestionShower {
 
+    /**
+     * Конструктор.
+     * @param {HTMLInputElement} tagQuestion - тег вопроса.
+     * @param {HTMLInputElement} tagAnswer - тег ответов.
+     * @param {string} question - вопрос.
+     * @param {array} answers - ответы.
+     */
     constructor(tagQuestion, tagAnswer, question, answers) {
         super(tagQuestion, tagAnswer, question, answers);
     }
 
+    /**
+     * Отображает вопрос на странице.
+    */
     show() {
         this._setQuestion();
         this._setAnswerToEmpty();
@@ -93,6 +160,9 @@ class MultiAnswerQuestionShower extends QuestionShower {
         this._createButton('Отправить ответ');
     }
 
+    /**
+     * Вспомогательный функция для создания вопроса и ответа.
+    */
     _questionHandler() {
         Object.values(this._answers).forEach(answer => {
             this._createSelectForAnswers('checkbox', answer);
@@ -100,18 +170,34 @@ class MultiAnswerQuestionShower extends QuestionShower {
     }
 }
 
+/**
+ * Класс для показа вопроса (открытый ответ)
+ */
 class OpenAnswerQuestionShower extends QuestionShower {
 
+    /**
+     * Конструктор.
+     * @param {HTMLInputElement} tagQuestion - тег вопроса.
+     * @param {HTMLInputElement} tagAnswer - тег ответов.
+     * @param {string} question - вопрос.
+     * @param {array} answers - ответы.
+     */
     constructor(tagQuestion, tagAnswer, question, answers) {
         super(tagQuestion, tagAnswer, question, answers);
     }
 
+    /**
+     * Отображает вопрос на странице.
+    */
     show() {
         this._setQuestion();
         this._setAnswerToEmpty();
         this._questionHandler();
     }
 
+    /**
+     * Вспомогательный функция для создания вопроса и ответа.
+    */
     _questionHandler() {
         let newTextToAnswer = document.createElement('input');
         this._setAttributes(newTextToAnswer, 'type', 'text')
@@ -124,17 +210,34 @@ class OpenAnswerQuestionShower extends QuestionShower {
     }
 }
 
+/**
+ * Класс для показа вопроса (выпадающий список ответов)
+ */
 class OneListAnswerQuestionShower extends QuestionShower {
+
+    /**
+     * Конструктор.
+     * @param {HTMLInputElement} tagQuestion - тег вопроса.
+     * @param {HTMLInputElement} tagAnswer - тег ответов.
+     * @param {string} question - вопрос.
+     * @param {array} answers - ответы.
+     */
     constructor(tagQuestion, tagAnswer, question, answers) {
         super(tagQuestion, tagAnswer, question, answers);
     }
 
+    /**
+     * Отображает вопрос на странице.
+    */
     show() {
         this._setQuestion();
         this._setAnswerToEmpty();
         this._questionHandler();
     }
 
+    /**
+     * Вспомогательный функция для создания вопроса и ответа.
+    */
     _questionHandler() {
         let select = document.createElement('select');
         select.className = 'answer-label';
@@ -145,12 +248,18 @@ class OneListAnswerQuestionShower extends QuestionShower {
         this._createButton('Отправить ответ');
     }
 
+    /**
+     * Cоздание ответов циклом.
+    */
     _createAnswers(select) {
         this._answers.forEach((answer) => {
             this._createOption(select, answer);
         })
     }
 
+    /**
+     * Создание option для select'a.
+    */
     _createOption(select, answer) {
         let option = document.createElement('option');
         option.className = 'answer-label';
@@ -160,6 +269,10 @@ class OneListAnswerQuestionShower extends QuestionShower {
     }
 }
 
+
+/**
+ * Класс-фабрика для создания классов отображения вопросов.
+ */
 export class QuestionShowerFabric {
     #tagQuestion;
     #tagAnswer;
@@ -167,6 +280,13 @@ export class QuestionShowerFabric {
     #answers;
     #typeShower;
 
+    /**
+     * Конструктор.
+     * @param {HTMLInputElement} tagQuestion - тег вопроса.
+     * @param {HTMLInputElement} tagAnswer - тег ответов.
+     * @param {string} question - вопрос.
+     * @param {array} answers - ответы.
+     */
     constructor(tagQuestion, tagAnswer, question, answers, typeShower) {
         this.#tagQuestion = tagQuestion;
         this.#tagAnswer = tagAnswer;
@@ -175,6 +295,9 @@ export class QuestionShowerFabric {
         this.#typeShower = typeShower;
     }
 
+    /**
+     * Создание класса отображения вопроса.
+     */
     createShower() {
         switch (this.#typeShower) {
             case 'one':

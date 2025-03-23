@@ -1,5 +1,8 @@
 
 
+/**
+ * Функция редиректа на финальную страницу.
+*/
 export function redirect() {
     let answers = JSON.parse(localStorage.getItem('answers')) || {};
     let questions = JSON.parse(localStorage.getItem('questions'));

@@ -7,11 +7,17 @@ import { Timer } from "/scripts/Timer.js";
 import { redirect } from "/scripts/utils.js"
 
 
+/**
+ * Возвращанение на главную страницу.
+ */
 function goHome() {
     localStorage.clear();
     window.location.replace("index.html");
 }
 
+/**
+ * Создание необходимых массивов в локальном хранилище.
+ */
 function createStateLocalStorage() {
     if (!localStorage.getItem('showed')) {
         localStorage.setItem('showed', JSON.stringify([]));
@@ -26,32 +32,50 @@ function createStateLocalStorage() {
     }
 }
 
-
+/**
+ * Переход на следующий вопрос
+ */
 function goToNextQuestion() {
     let pagination = createPagination();
     localStorage.setItem('q', pagination.next());
 }
 
+/**
+ * Переход на предыдущий вопрос
+ */
 function goToPrevQuestion() {
     let pagination = createPagination();
     localStorage.setItem('q', pagination.prev());
 }
 
+/**
+ * Переход на первый вопрос
+ */
 function goToFirstQuestion() {
     let pagination = createPagination();
     localStorage.setItem('q', pagination.goToFirst());
 }
 
+/**
+ * Переход на последнюю вопрос
+ */
 function goToLastQuestion() {
     let pagination = createPagination();
     localStorage.setItem('q', pagination.goToLast());
 }
 
+/**
+ * Переход на определенную вопрос
+ * @param {string} pageNumber - страница.
+ */
 function goToPage(pageNumber) {
     let pagination = createPagination();
     localStorage.setItem('q', pagination.goToPage(pageNumber));
 }
 
+/**
+ * Создание пагинации
+ */
 function createPagination() {
     let currentQuestion = Number(localStorage.getItem('q'));
 
@@ -60,6 +84,9 @@ function createPagination() {
     )
 }
 
+/**
+ * Отображение вопроса на странице
+ */
 function showQuestions() {
     let tagQuestion = document.querySelector('.question');
     let tagAnswers = document.querySelector('.answers');
@@ -74,11 +101,17 @@ function showQuestions() {
     numQuestion.innerText = `Вопрос номер: ${currentQuestion + 1}`;
 }
 
+/**
+ * Получение вопросов из файла
+ */
 function getQuestions(filename) {
     let parser = new JsonParser(filename);
     return parser.getData();
 }
 
+/**
+ * Обновление состояния страницы
+ */
 function stateUpdate() {
     setShowed();
     showQuestions();
@@ -98,12 +131,23 @@ function stateUpdate() {
         stateUpdate();
     })
 
+
+    let answerInputText = document.querySelector(".answer-text");
+    if (answerInputText) {
+        answerInputText.addEventListener("input", function (e) {
+            saveUserAnswer();
+        })
+    }
+
     let stopBtn = document.querySelector(".stop-btn");
     stopBtn.addEventListener("click", function (e) {
         redirect();
     })
 }
 
+/**
+ * Отображение ответов пользователя
+ */
 function setUserAnswered() {
     let currentPage = Number(JSON.parse(localStorage.getItem("q"))) - 1;
     let currentQuestion = JSON.parse(localStorage.getItem("questions"))[currentPage];
@@ -120,6 +164,11 @@ function setUserAnswered() {
     }
 }
 
+/**
+ * Отображение ответов пользователя с множественным выбором
+ * @param {string} currentQuestion - текущий вопрос.
+ * @param {object} answers - ответы.
+ */
 function setMultipleAnswered(currentQuestion, answers) {
     let currentAnswers = answers[currentQuestion.question];
     if (currentAnswers) {
@@ -133,6 +182,11 @@ function setMultipleAnswered(currentQuestion, answers) {
     }
 }
 
+/**
+ * Отображение ответов пользователя с одиночным выбором
+ * @param {string} currentQuestion - текущий вопрос.
+ * @param {object} answers - ответы.
+ */
 function setOneAnswered(currentQuestion, answers) {
     let currentAnswers = answers[currentQuestion.question];
     if (currentAnswers) {
@@ -146,6 +200,11 @@ function setOneAnswered(currentQuestion, answers) {
     }
 }
 
+/**
+ * Отображение ответов пользователя с открытым ответом
+ * @param {string} currentQuestion - текущий вопрос.
+ * @param {object} answers - ответы.
+ */
 function setOpenAnswered(currentQuestion, answers) {
     let currentAnswers = answers[currentQuestion.question];
     if (currentAnswers) {
@@ -154,6 +213,11 @@ function setOpenAnswered(currentQuestion, answers) {
     }
 }
 
+/**
+ * Отображение ответов пользователя с одиночным (выпадающий список) выбором
+ * @param {string} currentQuestion - текущий вопрос.
+ * @param {object} answers - ответы.
+ */
 function setOneListAnswered(currentQuestion, answers) {
     let currentAnswers = answers[currentQuestion.question];
     if (currentAnswers) {
@@ -167,6 +231,9 @@ function setOneListAnswered(currentQuestion, answers) {
     }
 }
 
+/**
+ * Сохранение ответов пользователя
+ */
 function saveUserAnswer() {
     try {
         let currentPage = Number(JSON.parse(localStorage.getItem("q"))) - 1;
@@ -186,6 +253,11 @@ function saveUserAnswer() {
     } catch (TypeError) {}
 }
 
+/**
+ * Сохранить ответ на вопросом с несколькими вариантами ответа
+ * @param {string} currentQuestion - текущий вопрос.
+ * @param {object} answers - ответы.
+ */
 function saveMultipleAnswer(currentQuestion, answers) {
     let checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
     let answer = [];
@@ -200,6 +272,11 @@ function saveMultipleAnswer(currentQuestion, answers) {
     return answers;
 }
 
+/**
+ * Сохранить ответ на вопросом с одним вариантом ответа
+ * @param {string} currentQuestion - текущий вопрос.
+ * @param {object} answers - ответы.
+ */
 function saveOneAnswer(currentQuestion, answers) {
     let radioes = document.querySelector("input[type='radio']:checked");
     if (radioes != null) {
@@ -210,6 +287,11 @@ function saveOneAnswer(currentQuestion, answers) {
     return answers;
 }
 
+/**
+ * Сохранить ответ на вопросом с открытым ответом
+ * @param {string} currentQuestion - текущий вопрос.
+ * @param {object} answers - ответы.
+ */
 function saveOpenAnswer(currentQuestion, answers) {
     let answerText = document.querySelector(".answer-text").value;
     answers[currentQuestion.question] = [answerText];
@@ -219,6 +301,11 @@ function saveOpenAnswer(currentQuestion, answers) {
     return answers;
 }
 
+/**
+ * Сохранить ответ на вопросом с одним вариантом (выпадающий список) ответа
+ * @param {string} currentQuestion - текущий вопрос.
+ * @param {object} answers - ответы.
+ */
 function saveOneListAnswer(currentQuestion, answers) {
     let select = document.querySelector(".answer-label");
     if(select.value != "-------") {
@@ -228,6 +315,9 @@ function saveOneListAnswer(currentQuestion, answers) {
     return answers;
 }
 
+/**
+ * Окрашивание пагинации
+ */
 function fillPagination() {
     let fillPagination = new FillPagination(
         Number(localStorage.getItem('q')),
@@ -238,18 +328,27 @@ function fillPagination() {
     fillPagination.fill();
 }
 
+/**
+ * Сохранение ответа в локальное хранилище
+ */
 function setAnswered() {
     let answered = JSON.parse(localStorage.getItem('answered')) || [];
     answered.push(Number(localStorage.getItem('q')));
     localStorage.setItem('answered', JSON.stringify(answered));
 }
 
+/**
+ * Сохрание ответа в локальное хранилище
+ */
 function setShowed() {
     let showed = JSON.parse(localStorage.getItem('showed')) || [];
     showed.push(Number(localStorage.getItem('q')));
     localStorage.setItem('showed', JSON.stringify(showed));
 }
 
+/**
+ * Перемешивание вопросов
+ */
 function mixQuestions() {
     let questions = getQuestions('v1_geo.json');
 
@@ -261,6 +360,9 @@ function mixQuestions() {
     return questions
 }
 
+/**
+ * Перемешивание ответов
+ */
 function mixAnswers(questions) {
     if (localStorage.getItem('ma') == 'true') {
         for (let i = 0; i < questions.length; i++) {

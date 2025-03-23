@@ -8,26 +8,26 @@ export class JsonParser {
     #filename;
 
     /**
-     * {filename} - имя файла.
+     * Конструктор.
+     * @param {str} filename - имя файла.
      */
     constructor(filename) {
         this.#filename = filename;
     }
 
     /**
-     * Метод для чтения файла (логирование).
+     * функция для чтения файла (логирование).
      */
     getData() {
         try {
             return this.#getData();
         } catch (error) {
-            console.error(error);
             throw new Error('Невозможно прочитать файл');
         }
     }
 
     /**
-     * Метод для чтения файла (обработка ошибок).
+     * функция для чтения файла (обработка ошибок).
      */
     #getData() {
         this.#checkExtension();

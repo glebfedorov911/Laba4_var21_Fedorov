@@ -1,7 +1,9 @@
 
 
 
-
+/**
+ * функция для получения всех ответов и вопросов.
+ */
 function getAllAnswersAndQuestions() {
     let answers = JSON.parse(localStorage.getItem('answers')) || {};
     let questions = JSON.parse(localStorage.getItem('questions'));
@@ -11,11 +13,19 @@ function getAllAnswersAndQuestions() {
     return [questions, answers]
 }
 
-function goHome(answers) {
+/**
+ * функция для редиректа на главную страницу.
+ */
+function goHome() {
     localStorage.clear();
     window.location.replace("index.html");
 }
 
+/**
+ * функция для проверки ответов на корректность.
+ * @param {object} answers - ответы.
+ * @param {object} questions - вопросы.
+ */
 function checkAnswersToCorrect(answers, questions) {
     let marks = {};
     for(let i in questions) {
@@ -45,6 +55,11 @@ function checkAnswersToCorrect(answers, questions) {
     return marks;
 }
 
+/**
+ * функция для проверки ответов на корректность.
+ * @param {object} marks - правильность ответа.
+ * @param {object} questions - вопросы.
+ */
 function showResult(marks, answers) {
     let tbody = document.querySelector("tbody");
     let countMark = 0;
