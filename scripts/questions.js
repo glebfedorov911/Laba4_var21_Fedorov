@@ -3,6 +3,8 @@ import { Pagination } from "/scripts/Pagination.js";
 import { JsonParser } from "/scripts/FileParser.js";
 import { QuestionShowerFabric } from "/scripts/QuestionShower.js";
 import { MixData } from "/scripts/MixData.js";
+import { Timer } from "/scripts/Timer.js";
+import { redirect } from "/scripts/utils.js"
 
 
 function goHome() {
@@ -10,7 +12,7 @@ function goHome() {
     window.location.replace("index.html");
 }
 
-function createStateForPagination() {
+function createStateLocalStorage() {
     if (!localStorage.getItem('showed')) {
         localStorage.setItem('showed', JSON.stringify([]));
     }
@@ -72,11 +74,6 @@ function showQuestions() {
     numQuestion.innerText = `Вопрос номер: ${currentQuestion + 1}`;
 }
 
-function setMultiple() {
-    let answers = JSON.stringify(document.querySelector('answers'));
-
-}
-
 function getQuestions(filename) {
     let parser = new JsonParser(filename);
     return parser.getData();
@@ -85,34 +82,108 @@ function getQuestions(filename) {
 function stateUpdate() {
     setShowed();
     showQuestions();
-    createStateForPagination();
+    createStateLocalStorage();
     fillPagination();
+    setUserAnswered();
 
     let answerButtons = document.querySelector(".answer");
 
     answerButtons.addEventListener("click", function (e) {
-        setAnswered();
+        let q = JSON.parse(localStorage.getItem('q'));
+        if (q == 8) {
+            alert("Вы прошли тест! Нажмите Завершить тест, чтобы узнать результаты!");
+        }
         saveUserAnswer();
         goToNextQuestion();
         stateUpdate();
     })
+
+    let stopBtn = document.querySelector(".stop-btn");
+    stopBtn.addEventListener("click", function (e) {
+        redirect();
+    })
 }
 
-function saveUserAnswer() {
+function setUserAnswered() {
     let currentPage = Number(JSON.parse(localStorage.getItem("q"))) - 1;
     let currentQuestion = JSON.parse(localStorage.getItem("questions"))[currentPage];
     let answers = JSON.parse(localStorage.getItem("answers")) || {};
 
-    console.log(currentQuestion, currentQuestion.mode);
     if (currentQuestion.mode == "multiple") {
-        saveMultipleAnswer(currentQuestion, answers);
+        setMultipleAnswered(currentQuestion, answers);
     } else if (currentQuestion.mode == "one") {
-        saveOneAnswer(currentQuestion, answers);
+        setOneAnswered(currentQuestion, answers);
     } else if (currentQuestion.mode == "open") {
-        saveOpenAnswer(currentQuestion, answers);
+        setOpenAnswered(currentQuestion, answers);
+    } else if (currentQuestion.mode == "one-list") {
+        setOneListAnswered(currentQuestion, answers);
     }
-    console.log(JSON.parse(localStorage.getItem("answers")))
+}
 
+function setMultipleAnswered(currentQuestion, answers) {
+    let currentAnswers = answers[currentQuestion.question];
+    if (currentAnswers) {
+        let checkboxes = document.querySelectorAll("input[type='checkbox']");
+        checkboxes.forEach(function (checkbox) {
+            let label = checkbox.closest('label');
+            if (currentAnswers.includes(label.textContent)) {
+                checkbox.checked = true;
+            }
+        })
+    }
+}
+
+function setOneAnswered(currentQuestion, answers) {
+    let currentAnswers = answers[currentQuestion.question];
+    if (currentAnswers) {
+        let radioes = document.querySelectorAll("input[type='radio']");
+        radioes.forEach(function (radio) {
+            let label = radio.closest('label');
+            if (currentAnswers.includes(label.textContent)) {
+                radio.checked = true;
+            }
+        })
+    }
+}
+
+function setOpenAnswered(currentQuestion, answers) {
+    let currentAnswers = answers[currentQuestion.question];
+    if (currentAnswers) {
+        let textarea = document.querySelector(".answer-text");
+        textarea.value = currentAnswers;
+    }
+}
+
+function setOneListAnswered(currentQuestion, answers) {
+    let currentAnswers = answers[currentQuestion.question];
+    if (currentAnswers) {
+        let options = document.querySelectorAll("option");
+        options.forEach(function (option) {
+            let value = option.value;
+            if (currentAnswers.includes(value)) {
+                option.selected = true;
+            }
+        })
+    }
+}
+
+function saveUserAnswer() {
+    try {
+        let currentPage = Number(JSON.parse(localStorage.getItem("q"))) - 1;
+        let currentQuestion = JSON.parse(localStorage.getItem("questions"))[currentPage];
+        let answers = JSON.parse(localStorage.getItem("answers")) || {};
+
+        if (currentQuestion.mode == "multiple") {
+            answers = saveMultipleAnswer(currentQuestion, answers);
+        } else if (currentQuestion.mode == "one") {
+            answers = saveOneAnswer(currentQuestion, answers);
+        } else if (currentQuestion.mode == "open") {
+            answers = saveOpenAnswer(currentQuestion, answers);
+        } else if (currentQuestion.mode == "one-list") {
+            answers = saveOneListAnswer(currentQuestion, answers)
+        }
+        localStorage.setItem("answers", JSON.stringify(answers));
+    } catch (TypeError) {}
 }
 
 function saveMultipleAnswer(currentQuestion, answers) {
@@ -122,24 +193,39 @@ function saveMultipleAnswer(currentQuestion, answers) {
         if (checkboxes[i].checked) {
             let label = checkboxes[i].closest('label');
             answer.push(label.textContent);
+            setAnswered();
         }
     }
     answers[currentQuestion.question] = answer;
-    console.log(answers);
-    localStorage.setItem("answers", JSON.stringify(answers));
+    return answers;
 }
 
 function saveOneAnswer(currentQuestion, answers) {
     let radioes = document.querySelector("input[type='radio']:checked");
+    if (radioes != null) {
+        setAnswered();
+    }
 
     answers[currentQuestion.question] = [radioes.closest('label').textContent];
-    localStorage.setItem("answers", JSON.stringify(answers));
+    return answers;
 }
 
 function saveOpenAnswer(currentQuestion, answers) {
     let answerText = document.querySelector(".answer-text").value;
     answers[currentQuestion.question] = [answerText];
-    localStorage.setItem("answers", JSON.stringify(answers));
+    if (answerText != "") {
+        setAnswered();
+    }
+    return answers;
+}
+
+function saveOneListAnswer(currentQuestion, answers) {
+    let select = document.querySelector(".answer-label");
+    if(select.value != "-------") {
+        setAnswered();
+    }
+    answers[currentQuestion.question] = [select.value];
+    return answers;
 }
 
 function fillPagination() {
@@ -168,7 +254,7 @@ function mixQuestions() {
     let questions = getQuestions('v1_geo.json');
 
     if (localStorage.getItem('mq') == 'true') {
-        let mixData = new MixData(getQuestions('v1_geo.json'));
+        let mixData = new MixData(questions);
         return mixData.getArray();
     }
 
@@ -189,6 +275,11 @@ function mixAnswers(questions) {
     localStorage.setItem("questions", JSON.stringify(questions))
     return questions;
 }
+
+let time = localStorage.getItem('t');
+let timerTag = document.querySelector(".timer");
+let timer = new Timer(time, timerTag);
+timer.start();
 
 let questions = mixQuestions();
 questions = mixAnswers(questions);
@@ -236,3 +327,12 @@ pagesNavigation.forEach(function(page) {
         stateUpdate();
     })
 })
+
+document.body.addEventListener('click', function() {
+    saveUserAnswer();
+})
+
+window.addEventListener("unload", function () {
+    time = localStorage.getItem("t");
+    localStorage.setItem("t", time-1);
+});

@@ -17,6 +17,10 @@ class QuestionShower {
         throw new Error("Этот метод должен быть реализован в подклассе");
     }
 
+    _questionHandler() {
+        throw new Error("Этот метод должен быть реализован в подклассе");
+    }
+
     _setQuestion() {
         this._tagQuestion.innerText = this._question;
     }
@@ -65,14 +69,14 @@ class OneAnswerQuestionShower extends QuestionShower {
     show() {
         this._setQuestion();
         this._setAnswerToEmpty();
-        Object.values(this._answers).forEach(answer => {
-            this._questionHandler(answer);
-        })
+        this._questionHandler();
         this._createButton('Отправить ответ');
     }
 
-    _questionHandler(answer) {
-        this._createSelectForAnswers('radio', answer);
+    _questionHandler() {
+        Object.values(this._answers).forEach(answer => {
+            this._createSelectForAnswers('radio', answer);
+        })
     }
 }
 
@@ -85,14 +89,14 @@ class MultiAnswerQuestionShower extends QuestionShower {
     show() {
         this._setQuestion();
         this._setAnswerToEmpty();
-        Object.values(this._answers).forEach(answer => {
-            this._questionHandler(answer);
-        })
+        this._questionHandler();
         this._createButton('Отправить ответ');
     }
 
-    _questionHandler(answer) {
-        this._createSelectForAnswers('checkbox', answer);
+    _questionHandler() {
+        Object.values(this._answers).forEach(answer => {
+            this._createSelectForAnswers('checkbox', answer);
+        })
     }
 }
 
@@ -117,6 +121,42 @@ class OpenAnswerQuestionShower extends QuestionShower {
         this._tagAnswer.appendChild(newTextToAnswer);
 
         this._createButton('Отправить ответ');
+    }
+}
+
+class OneListAnswerQuestionShower extends QuestionShower {
+    constructor(tagQuestion, tagAnswer, question, answers) {
+        super(tagQuestion, tagAnswer, question, answers);
+    }
+
+    show() {
+        this._setQuestion();
+        this._setAnswerToEmpty();
+        this._questionHandler();
+    }
+
+    _questionHandler() {
+        let select = document.createElement('select');
+        select.className = 'answer-label';
+        this._createOption(select, "-------");
+        this._createAnswers(select);
+
+        this._tagAnswer.appendChild(select);
+        this._createButton('Отправить ответ');
+    }
+
+    _createAnswers(select) {
+        this._answers.forEach((answer) => {
+            this._createOption(select, answer);
+        })
+    }
+
+    _createOption(select, answer) {
+        let option = document.createElement('option');
+        option.className = 'answer-label';
+        option.value = answer;
+        option.textContent = answer;
+        select.appendChild(option);
     }
 }
 
@@ -149,6 +189,9 @@ export class QuestionShowerFabric {
                 return new OpenAnswerQuestionShower(this.#tagQuestion, this.#tagAnswer,
                     this.#question, this.#answers);
                 break;
+            case 'one-list':
+                return new OneListAnswerQuestionShower(this.#tagQuestion, this.#tagAnswer,
+                    this.#question, this.#answers);
             default:
                 throw new Error("Неизвестный тип");
                 break;

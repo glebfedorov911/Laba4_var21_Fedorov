@@ -59,7 +59,7 @@
   },
   {
     "number": 5,
-    "mode": "one",
+    "mode": "one-list",
     "question": "Какой океан самый глубокий?",
     "variants": [
       "Тихий",
@@ -73,7 +73,7 @@
   },
   {
     "number": 6,
-    "mode": "one",
+    "mode": "one-list",
     "question": "В какой стране находятся пирамиды Гизы?",
     "variants": [
       "Греция",

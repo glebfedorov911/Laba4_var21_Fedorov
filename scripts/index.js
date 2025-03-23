@@ -1,4 +1,4 @@
-const DEFAULT_TIME = 10;
+const DEFAULT_TIME = 60;
 
 let startButton = document.querySelector(".start-btn");
 let time = document.querySelector("#time");
@@ -18,14 +18,15 @@ function convertTimeToDiaposoneFrom1To60(time) {
     if (time.value < 1) {
         time.value = 1;
     }
-    else if (time.value > 60) {
-        time.value = 60;
+    else if (time.value > 180) {
+        time.value = 180;
     } else {
         time.value = time.value;
     }
 }
 
 startButton.addEventListener("click", function() {
+    localStorage.clear();
     saveDataToLocalStorage();
     window.location.replace('question.html');
 })
