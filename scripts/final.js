@@ -31,18 +31,22 @@ function checkAnswersToCorrect(answers, questions) {
     for(let i in questions) {
         let question = questions[i];
         let fail = true;
-        console.log(questions);
         let userAnswer = answers[question.question];
         if (!userAnswer) {
             fail = true;
         } else {
             let corrects = question.correct;
-            for(let j in corrects) {
-                if (userAnswer.includes(corrects[j])) {
-                    fail = false;
-                } else {
-                    fail = true;
-                    break;
+            if (corrects.length != userAnswer.length) {
+                fail = true;
+            }
+            else {
+                for(let j in corrects) {
+                    if (userAnswer.includes(corrects[j])) {
+                        fail = false;
+                    } else {
+                        fail = true;
+                        break;
+                    }
                 }
             }
         }
