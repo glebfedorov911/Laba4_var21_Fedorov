@@ -436,5 +436,7 @@ document.body.addEventListener('click', function() {
 
 window.addEventListener("unload", function () {
     time = localStorage.getItem("t");
-    localStorage.setItem("t", time-1);
+    if (time > 0) {
+        localStorage.setItem("t", time-1);
+    }
 });
