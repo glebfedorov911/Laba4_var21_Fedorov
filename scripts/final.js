@@ -89,7 +89,7 @@ function showResult(marks, answers) {
         tbody.appendChild(tr);
     }
     let totalScore = document.querySelector(".total-score");
-    totalScore.innerText = `Общий счет: ${countMark} баллов`;
+    totalScore.innerText = `Общий счет: ${countMark} балл(ов/а)`;
 }
 
 let homeBtn = document.querySelector(".home-btn");
