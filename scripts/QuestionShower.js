@@ -75,18 +75,6 @@ class QuestionShower {
     }
 
     /**
-     * функция для создания кнопки.
-     * @param {string} textOnButton - текст на кнопке.
-    */
-    _createButton (textOnButton) {
-        let newButtonToAnswer = document.createElement('input');
-        this._setAttributes(newButtonToAnswer, 'type', 'button')
-            ._setAttributes(newButtonToAnswer, 'value', textOnButton)
-            ._setAttributes(newButtonToAnswer, 'class', 'answer');
-        this._tagAnswer.appendChild(newButtonToAnswer);
-    }
-
-    /**
      * функция для установки атрибутов.
      * @param {HTMLInputElement} element - текст на кнопке.
      * @param {string} attr - аттрибут.
@@ -121,7 +109,6 @@ class OneAnswerQuestionShower extends QuestionShower {
         this._setQuestion();
         this._setAnswerToEmpty();
         this._questionHandler();
-        this._createButton('Отправить ответ');
     }
 
     /**
@@ -157,7 +144,6 @@ class MultiAnswerQuestionShower extends QuestionShower {
         this._setQuestion();
         this._setAnswerToEmpty();
         this._questionHandler();
-        this._createButton('Отправить ответ');
     }
 
     /**
@@ -206,7 +192,6 @@ class OpenAnswerQuestionShower extends QuestionShower {
 
         this._tagAnswer.appendChild(newTextToAnswer);
 
-        this._createButton('Отправить ответ');
     }
 }
 
@@ -245,7 +230,6 @@ class OneListAnswerQuestionShower extends QuestionShower {
         this._createAnswers(select);
 
         this._tagAnswer.appendChild(select);
-        this._createButton('Отправить ответ');
     }
 
     /**

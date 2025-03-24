@@ -64,27 +64,28 @@ function checkAnswersToCorrect(answers, questions) {
  * @param {object} marks - правильность ответа.
  * @param {object} questions - вопросы.
  */
-function showResult(marks, answers) {
+function showResult(questions, marks, answers) {
     let tbody = document.querySelector("tbody");
     let countMark = 0;
+    let numQuestion = 0;
     for(let question in marks) {
         let typeCorrect = marks[question] == 1 ? "Верно" : "Ошибка";
-        let result = [question, answers[question], typeCorrect, marks[question]];
+        let result = [numQuestion + 1, question, answers[question], questions[numQuestion].correct, typeCorrect, marks[question]];
+        numQuestion += 1
         let tr = document.createElement("tr");
         for (let r in result) {
+            let classTypeCorrect = result[4] == "Верно" ? "correct" : "incorrect"
             let td = document.createElement("td");
-            if (r == 1 && (result[r] == undefined || result[r] == "" || result[r] == "-------")) {
+            if (r == 2 && (result[r] == undefined || result[r] == "" || result[r] == "-------")) {
                 td.innerText = 'Ответ не был дан';
             } else {
                 td.innerText = result[r];
             }
-            if (r == 2 && result[r] == "Верно") {
-                td.className = "correct";
+            if (r == 4 && result[r] == "Верно") {
                 countMark++;
-            } else if (r == 2 && result[r] == "Ошибка") {
-                td.className = "incorrect";
             }
             tr.appendChild(td);
+            td.className = classTypeCorrect;
         }
         tbody.appendChild(tr);
     }
@@ -101,4 +102,4 @@ let result = getAllAnswersAndQuestions();
 let questions = result[0];
 let answers = result[1];
 let marks = checkAnswersToCorrect(answers, questions);
-showResult(marks, answers);
+showResult(questions, marks, answers);

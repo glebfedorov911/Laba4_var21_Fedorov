@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/styles/question.css">
+    <title>Вопросы</title>
     <script type="module" src="/scripts/FileParser.js" defer></script>
     <script type="module" src="/scripts/QuestionShower.js" defer></script>
     <script type="module" src="/scripts/FillPagination.js" defer></script>
@@ -12,20 +12,22 @@
     <script type="module" src="/scripts/Timer.js" defer></script>
     <script type="module" src="/scripts/utils.js" defer></script>
     <script type="module" src="/scripts/questions.js" defer></script>
-    <title>Вопросы</title>
+    <link rel="stylesheet" href="/styles/question.css">
 </head>
 <body>
 <div class="container">
     <h1>📝 Опрос</h1>
     <button class="home-btn">🏠 Домой</button>
 
-    <div class="question-block">
-        <div class="timer">⏳ 00:00</div>
-        <div class="num-question"></div>
-        <div class="question"></div>
-    </div>
+    <div class="question-wrapper">
+        <div class="question-block">
+            <div class="timer">⏳ 00:00</div>
+            <div class="num-question">Вопрос 1</div>
+            <div class="question">Какого цвета небо?</div>
+        </div>
 
-    <div class="answers">
+        <div class="answers">
+        </div>
     </div>
 
     <div class="pagination">

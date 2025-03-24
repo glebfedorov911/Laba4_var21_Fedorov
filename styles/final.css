@@ -79,3 +79,12 @@ th {
     background: #138496;
     transform: scale(1.05);
 }
+
+.container {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+table {
+    min-width: 600px;
+}

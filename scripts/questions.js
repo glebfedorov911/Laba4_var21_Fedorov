@@ -119,19 +119,6 @@ function stateUpdate() {
     fillPagination();
     setUserAnswered();
 
-    let answerButtons = document.querySelector(".answer");
-
-    answerButtons.addEventListener("click", function (e) {
-        let q = JSON.parse(localStorage.getItem('q'));
-        if (q == 8) {
-            alert("Вы прошли тест! Нажмите Завершить тест, чтобы узнать результаты!");
-        }
-        saveUserAnswer();
-        goToNextQuestion();
-        stateUpdate();
-    })
-
-
     let answerInputText = document.querySelector(".answer-text");
     if (answerInputText) {
         answerInputText.addEventListener("input", function (e) {
